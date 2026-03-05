@@ -197,18 +197,18 @@ class cra5_api():
                             ):
         one_step= []
         pressure_file = f'{self.local_root}/ERA5/{time_stamp[:4]}/{time_stamp}_pressure.nc'
-        single_file = f'{self.local_root}/ERA5/{time_stamp[:4]}/{time_stamp}_single.nc'
+        single_file = f'{self.local_root}/ERA5/{time_stamp[:4]}/{time_stamp}_single_*.nc'
 
         pressure_data = xr.open_dataset(pressure_file, 
                                         engine='netcdf4',
-                                        )
-        single_data = xr.open_dataset(single_file, 
+                                        ).compute()
+        single_data = xr.open_mfdataset(single_file, 
                                         engine='netcdf4',
-                                        )
+                                        ).compute()
                                             
         for vname in self.cfg.vnames.get('pressure'):
             D = pressure_data[vname].data
-            Pha_levels = list(pressure_data.level.data)
+            Pha_levels = list(pressure_data.pressure_level.data)
 
             level_mapping =  [Pha_levels.index(val) for val in self.cfg.pressure_level if val in Pha_levels]
             
@@ -304,7 +304,7 @@ class cra5_api():
             fig.colorbar(im2, ax=axs[i, 2])
         plt.tight_layout()
 
-        plt.show()
+        # plt.show()
         if save_path is not None:
             fig_path = f'{save_path}/{time_stamp}_rconstruction.png'
         else:
