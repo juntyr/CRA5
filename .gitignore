@@ -24,6 +24,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 cra5/*.so
+**/__pycache__
 
 # big data
 data/
